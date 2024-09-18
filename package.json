@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/osenoah/oXe-bot/issues"
   },
-  "homepage": "https://github.com/osenoah/oXe-bot#readme"
+  "homepage": "https://github.com/osenoah/oXe-bot#readme",
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
 }
