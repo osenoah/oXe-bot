@@ -4,7 +4,8 @@
   "description": "Telegram Bot",
   "main": "index.js",
   "scripts": {
-    "test": "/oXe-bot"
+    "test": "",
+    "start": "node bot.js"
   },
   "repository": {
     "type": "git",

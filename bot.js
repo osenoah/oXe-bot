@@ -5,9 +5,9 @@ const axios = require('axios');
 const port = process.env.PORT || 3000;
 expressApp.use(express.static('static'));
 expressApp.use(express.json());
-require('dot.env').config();
+require('dotenv').config();
 
-const { Telegraf } = require('telegraph')
+const { Telegraf } = require('telegraf')
 
 const bot = new Telegraf(process.env.BOT_TOKEN)
 
@@ -16,7 +16,7 @@ expressApp.get('/', (req, res)=>{
 })
 
 expressApp.use(bot.webhookCallback('/secret-path'))
-bot.telegram.setWebhook('https://o-xe-bot.vercel.app/secret-path')
+bot.telegram.setWebhook("https://biblequiz-c3x253hoz-ose-noahs-projects.vercel.app/");
 
 expressApp.listen(port, ()=> console.log(`Listening on ${port}`));
 
