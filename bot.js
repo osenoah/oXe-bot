@@ -16,7 +16,7 @@ expressApp.get('/', (req, res)=>{
 })
 
 expressApp.use(bot.webhookCallback('/secret-path'))
-bot.telegram.setWebhook('https://o-xe-bot.vercel.app//secret-path')
+bot.telegram.setWebhook('https://o-xe-bot.vercel.app/secret-path')
 
 expressApp.listen(port, ()=> console.log(`Listening on ${port}`));
 
