@@ -20,6 +20,8 @@
   },
   "homepage": "https://github.com/osenoah/oXe-bot#readme",
   "dependencies": {
-    "dotenv": "^16.4.5"
+    "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
+    "telegraf": "^4.16.3"
   }
 }
