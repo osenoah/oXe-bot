@@ -16,15 +16,15 @@ expressApp.get('/', (req, res)=>{
     res.sendFile(path.join(__dirname + '/index.html'))
 })
 
-expressApp.use(bot.webhookCallback('/secret-path'))
-bot.telegram.setWebhook(`https://api.telegram.org/bot${token}/secret-path`);
+// expressApp.use(bot.webhookCallback('/secret-path'))
+// bot.telegram.setWebhook(`https://api.telegram.org/bot${token}/secret-path`);
 
-expressApp.listen(port, ()=> console.log(`Listening on ${port}`));
+// expressApp.listen(port, ()=> console.log(`Listening on ${port}`));
 
 //start process
 bot.command('start', ctx =>{
     console.log(ctx.from)
-    bot.telegram.sendMessage(ctx.chat.id, 'Yo!!😜 This is the oXe-🤖.nClick /features to see what i can do.',{
+    bot.telegram.sendMessage(ctx.chat.id, `Yo!!😜 This is the oXe-🤖.nClick /features to see what i can do.`,{
     })
 });
 
@@ -43,3 +43,4 @@ bot.command('eth', ctx =>{
 })
 
 //check weather
+bot.launch();
