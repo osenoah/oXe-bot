@@ -16,6 +16,29 @@ expressApp.get('/', (req, res)=>{
 })
 
 expressApp.use(bot.webhookCallback('/secret-path'))
-bot.telegram.setWebhook('')
+bot.telegram.setWebhook('https://o-xe-bot.vercel.app//secret-path')
 
 expressApp.listen(port, ()=> console.log(`Listening on ${port}`));
+
+//start process
+bot.command('start', ctx =>{
+    console.log(ctx.from)
+    bot.telegram.sendMessage(ctx.chat.id, 'Yo!!😜 This is the oXe-🤖.nClick /features to see what i can do.',{
+    })
+});
+
+//check ethereum rate
+bot.command('eth', ctx =>{
+    var rate;
+    console.log(ctx.from);
+    axios.get()
+    .then(response => {
+        console.log(response.data);
+        rate = response.data.eth
+        const message = `Ethereum is $${rate.usd}`
+        bot.telegram.sendMessage(ctx.chat.id, message, {
+        })
+    })
+})
+
+//check weather
