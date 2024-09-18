@@ -71,5 +71,9 @@ bot.command('sol', ctx =>{
     })
 })
 
+bot.command('weather', ctx =>{
+    
+})
+
 //check weather
 bot.launch();
