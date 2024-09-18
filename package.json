@@ -1,0 +1,22 @@
+{
+  "name": "oxe-bot",
+  "version": "1.0.0",
+  "description": "Telegram Bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "/oXe-bot"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/osenoah/oXe-bot.git"
+  },
+  "keywords": [
+    "Telegram"
+  ],
+  "author": "osenoah",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/osenoah/oXe-bot/issues"
+  },
+  "homepage": "https://github.com/osenoah/oXe-bot#readme"
+}
