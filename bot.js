@@ -71,50 +71,61 @@ bot.command('sol', ctx =>{
         })
     })
 });
-bot.launch();
-const appID = (process.env.appID);
-const appURL = (city) => ( 
-    `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&&appid=${appID}`
-);
-const weatherFeedback = (name, main, weather, wind, clouds) => (
-    `Weather in ${name}\n
-    ${weather.main}-${weather.description}\n
-    Temperature: ${main.temp}°C\n
-    Pressure: ${main.pressure}hpa\n
-    Humidity: ${main.humidity}%\n
-    Wind: ${wind.speed}m/s\n
-    Clouuds: ${clouds.all}%
-    `
-);
-const getCityWeather = (chatId, city) =>{
-    const endpoint = appURL(city);
 
-    axios.get(endpoint).then((resp) => {
-        const { name, main, weather, wind, clouds } = resp.data;
 
-bot.sendMessage(
-    chatId, 
-    weatherFeedback(name, main, wind, clouds), {
-        parse_mode: "HTML"
-    }
-);}, 
-    error => {
-        console.log("error", error);
-        bot.telegram.sendMessage(
-            chatId, `Weather for ${city} unavailable🤨`, {
-                parse_mode: "HTML"
-        }
-    );
-});
-}
 
 // check weather
 bot.command('weather', ctx =>{
+    const appID = (process.env.appID);
+    const appURL = (city) => ( 
+        `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&&appid=${appID}`
+    );
+    const weatherFeedback = (name, main, weather, wind, clouds) => (
+        `Weather in ${name}\n
+        ${weather.main}-${weather.description}\n
+        Temperature: ${main.temp}°C\n
+        Pressure: ${main.pressure}hpa\n
+        Humidity: ${main.humidity}%\n
+        Wind: ${wind.speed}m/s\n
+        Clouuds: ${clouds.all}%
+        `
+    );
+    const getCityWeather = (chatId, city) =>{
+        const endpoint = appURL(city);
+    
+        axios.get(endpoint).then((resp) => {
+            const { name, main, wind, clouds } = resp.data;
+    
+    bot.sendMessage(
+        chatId, 
+        weatherFeedback(name, main, wind, clouds), {
+            parse_mode: "HTML"
+        }
+    );}, 
+        error => {
+            console.log("error", error);
+            bot.telegram.sendMessage(
+                chatId, `Weather for ${city} unavailable🤨`, {
+                    parse_mode: "HTML"
+            }
+        );
+    });
+    }
+    const chatId = msg.chat.id;
+    const city = match.input.split(' ')[1];
 
-})
+    if (city === undefined) {
+        bot.telegram.sendMessage(
+            chatId, `Please provide city name`
+        );
+        return;
+    }
+    getCityWeather(chatId, city);
+});
 
 //add clear feature: that clears all messages
 
 //add meme feature
 
 //add anime feature:
+bot.launch();
