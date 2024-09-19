@@ -75,7 +75,7 @@ bot.command('sol', ctx =>{
 
 
 // check weather
-bot.command('weather', ctx, msg, match =>{
+bot.command('weather', msg, match =>{
     const appID = (process.env.appID);
     const appURL = (city) => ( 
         `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&&appid=${appID}`
@@ -92,7 +92,7 @@ bot.command('weather', ctx, msg, match =>{
     );
     const getCityWeather = (chatId, city) =>{
         const endpoint = appURL(city);
-    console.log(ctx.from)
+    // console.log(ctx.from)
         axios.get(endpoint).then((resp) => {
             const { name, main, wind, clouds } = resp.data;
     
