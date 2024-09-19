@@ -81,12 +81,12 @@ const appURL = (city) => (
 
 const weatherFeedback = (name, main, weather, wind, clouds) => (
     `Weather in <b>${name}</b>\n
-    ${weather.main}-${weather.description}\n
+    ${weather.main} - ${weather.description}\n
     Temperature: <b>${main.temp}°C</b>\n
     Pressure: <b>${main.pressure}hpa</b>\n
     Humidity: <b>${main.humidity}%</b>\n
     Wind: <b>${wind.speed}m/s</b>\n
-    Clouuds: <b>{clouds.all}%</b>
+    Clouds: <b>${clouds.all}%</b>\n
     `
 );
 const getCityWeather = (chatId, city) =>{
