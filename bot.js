@@ -17,9 +17,6 @@ expressApp.get('/', (req, res)=>{
     res.sendFile(path.join(__dirname + '/index.html'))
 });
 
-// expressApp.use(bot.webhookCallback('/secret-path'))
-// bot.telegram.setWebhook(`https://localhost:3000bot${token}/secret-path`);
-
 expressApp.listen(port, ()=> console.log(`Listening on ${port}`));
 
 //start process
@@ -104,7 +101,7 @@ bot.telegram.sendMessage(
     error => {
         console.log("error", error);
         bot.telegram.sendMessage(
-            chatId, `Weather for ${city} unavailable🤨`, {
+            chatId, `Weather for <b>${city}</b> unavailable🤨`, {
                 parse_mode: "HTML"
         }
     );

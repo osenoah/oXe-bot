@@ -12,7 +12,8 @@
     "url": "git+https://github.com/osenoah/oXe-bot.git"
   },
   "keywords": [
-    "Telegram"
+    "Telegram",
+    "bots"
   ],
   "author": "osenoah",
   "license": "ISC",
