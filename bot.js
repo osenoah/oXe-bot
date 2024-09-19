@@ -81,7 +81,7 @@ const appURL = (city) => (
 
 const weatherFeedback = (name, main, weather, wind, clouds) => (
     `Weather in <b>${name}</b>\n
-    ${weather.main} - ${weather.description}\n
+    ${weather[0].main} - ${weather[0].description}\n
     Temperature: <b>${main.temp}°C</b>\n
     Pressure: <b>${main.pressure}hpa</b>\n
     Humidity: <b>${main.humidity}%</b>\n
@@ -97,7 +97,7 @@ const getCityWeather = (chatId, city) =>{
 
 bot.telegram.sendMessage(
     chatId, 
-    weatherFeedback(name, main, weather, wind, clouds), {
+    weatherFeedback(name, main, weather[0], wind, clouds), {
         parse_mode: "HTML"
     }
 );}, 
