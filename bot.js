@@ -37,7 +37,7 @@ bot.command('eth', ctx =>{
     console.log(ctx.from);
     axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd`)
     .then(response => {
-        console.log(response.data);
+        // console.log(response.data);
         rate = response.data.ethereum
         const message = `Ethereum is $${rate.usd}`
         bot.telegram.sendMessage(ctx.chat.id, message, {
@@ -49,7 +49,7 @@ bot.command('btc', ctx =>{
     console.log(ctx.from);
     axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd`)
     .then(response => {
-        console.log(response.data);
+        // console.log(response.data);
         rate = response.data.bitcoin
         const message = `Bitcoin is $${rate.usd}`
         bot.telegram.sendMessage(ctx.chat.id, message, {
@@ -61,7 +61,7 @@ bot.command('sol', ctx =>{
     console.log(ctx.from);
     axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd`)
     .then(response => {
-        console.log(response.data);
+        // console.log(response.data);
         rate = response.data.solana
         const message = `Solana is $${rate.usd}`
         bot.telegram.sendMessage(ctx.chat.id, message, {
@@ -90,7 +90,7 @@ const getCityWeather = (chatId, city) =>{
     const endpoint = appURL(city);
         axios.get(endpoint).then((resp) => {
         const { name, main, weather, wind, clouds } = resp.data;
-        console.log("API Endpoint:", endpoint);
+        // console.log("API Endpoint:", endpoint);
 
 bot.telegram.sendMessage(
     chatId, 
