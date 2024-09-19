@@ -75,11 +75,12 @@ bot.command('sol', ctx =>{
 
 
 // check weather
-bot.command('weather', msg, match =>{
+bot.command('weather', (ctx, msg, match) =>{
     const appID = (process.env.appID);
     const appURL = (city) => ( 
         `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&&appid=${appID}`
     );
+    console.log(ctx.from)
     const weatherFeedback = (name, main, weather, wind, clouds) => (
         `Weather in ${name}\n
         ${weather.main}-${weather.description}\n
@@ -92,8 +93,7 @@ bot.command('weather', msg, match =>{
     );
     const getCityWeather = (chatId, city) =>{
         const endpoint = appURL(city);
-    // console.log(ctx.from)
-        axios.get(endpoint).then((resp) => {
+            axios.get(endpoint).then((resp) => {
             const { name, main, wind, clouds } = resp.data;
     
     bot.telegram.sendMessage(
