@@ -11,7 +11,7 @@ require('dotenv').config();
 const { Telegraf } = require('telegraf');
 const { error } = require('console');
 
-const bot = new Telegraf(process.env.BOT_TOKEN)
+const bot = new Telegraf(token)
 
 expressApp.get('/', (req, res)=>{
     res.sendFile(path.join(__dirname + '/index.html'))
@@ -20,7 +20,7 @@ expressApp.get('/', (req, res)=>{
 // expressApp.use(bot.webhookCallback('/secret-path'))
 // bot.telegram.setWebhook(`https://localhost:3000bot${token}/secret-path`);
 
-// expressApp.listen(port, ()=> console.log(`Listening on ${port}`));
+expressApp.listen(port, ()=> console.log(`Listening on ${port}`));
 
 //start process
 bot.command('start', ctx =>{
