@@ -5,13 +5,13 @@ const axios = require('axios');
 const port = process.env.PORT || 3000;
 expressApp.use(express.static('static'));
 expressApp.use(express.json());
-const token = (process.env.BOT_TOKEN);
+// const token = ();
 require('dotenv').config();
 
 const { Telegraf } = require('telegraf');
 const { error } = require('console');
 
-const bot = new Telegraf(token)
+const bot = new Telegraf(process.env.BOT_TOKEN)
 
 expressApp.get('/', (req, res)=>{
     res.sendFile(path.join(__dirname + '/index.html'))
@@ -73,55 +73,57 @@ bot.command('sol', ctx =>{
 });
 
 
+const appID = (process.env.APP_ID);
+const appURL = (city) => ( 
+    `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&&appid=${appID}`
+);
 
-// check weather
-bot.command('weather', (ctx, msg, match) =>{
-    const appID = (process.env.appID);
-    const appURL = (city) => ( 
-        `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&&appid=${appID}`
-    );
-    console.log(ctx.from)
-    const weatherFeedback = (name, main, weather, wind, clouds) => (
-        `Weather in ${name}\n
-        ${weather.main}-${weather.description}\n
-        Temperature: ${main.temp}°C\n
-        Pressure: ${main.pressure}hpa\n
-        Humidity: ${main.humidity}%\n
-        Wind: ${wind.speed}m/s\n
-        Clouuds: ${clouds.all}%
-        `
-    );
-    const getCityWeather = (chatId, city) =>{
-        const endpoint = appURL(city);
-            axios.get(endpoint).then((resp) => {
-            const { name, main, wind, clouds } = resp.data;
-    
-    bot.telegram.sendMessage(
-        chatId, 
-        weatherFeedback(name, main, wind, clouds), {
-            parse_mode: "HTML"
-        }
-    );}, 
-        error => {
-            console.log("error", error);
-            bot.telegram.sendMessage(
-                chatId, `Weather for ${city} unavailable🤨`, {
-                    parse_mode: "HTML"
-            }
-        );
-    });
+
+const weatherFeedback = (name, main, weather, wind, clouds) => (
+    `Weather in <b>${name}</b>\n
+    ${weather.main}-${weather.description}\n
+    Temperature: <b>${main.temp}°C</b>\n
+    Pressure: <b>${main.pressure}hpa</b>\n
+    Humidity: <b>${main.humidity}%</b>\n
+    Wind: <b>${wind.speed}m/s</b>\n
+    Clouuds: <b>{clouds.all}%</b>
+    `
+);
+const getCityWeather = (chatId, city) =>{
+    const endpoint = appURL(city);
+        axios.get(endpoint).then((resp) => {
+        const { name, main, weather, wind, clouds } = resp.data;
+        console.log("API Endpoint:", endpoint);
+
+bot.telegram.sendMessage(
+    chatId, 
+    weatherFeedback(name, main, weather, wind, clouds), {
+        parse_mode: "HTML"
     }
-    const chatId = msg.chat.id;
-    const city = match.input.split(' ')[1];
+);}, 
+    error => {
+        console.log("error", error);
+        bot.telegram.sendMessage(
+            chatId, `Weather for ${city} unavailable🤨`, {
+                parse_mode: "HTML"
+        }
+    );
+});
+}
+// check weather
+bot.command('weather', ctx =>{
+    console.log(ctx.from)
+    const chatId = ctx.chat.id;
+    const city = ctx.message.text.split(' ')[[1]];
 
     if (city === undefined) {
         bot.telegram.sendMessage(
-            chatId, `Please provide city name`
+            chatId, `Please provide city name as \n/weather 'city'`
         );
         return;
-    }
+    } else {
     getCityWeather(chatId, city);
-});
+}});
 
 //add clear feature: that clears all messages
 
