@@ -92,7 +92,7 @@ bot.command('weather', ctx =>{
     );
     const getCityWeather = (chatId, city) =>{
         const endpoint = appURL(city);
-    
+    console.log(ctx.from)
         axios.get(endpoint).then((resp) => {
             const { name, main, wind, clouds } = resp.data;
     
