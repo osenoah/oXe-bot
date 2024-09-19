@@ -15,10 +15,10 @@ const bot = new Telegraf(process.env.BOT_TOKEN)
 
 expressApp.get('/', (req, res)=>{
     res.sendFile(path.join(__dirname + '/index.html'))
-})
+});
 
-// expressApp.use(bot.webhookCallback('/secret-path'))
-// bot.telegram.setWebhook(`https://localhost:3000bot${token}/secret-path`);
+expressApp.use(bot.webhookCallback('/secret-path'))
+bot.telegram.setWebhook(`https://oxe-bot.onrender.com/bot${token}/secret-path`);
 
 expressApp.listen(port, ()=> console.log(`Listening on ${port}`));
 
@@ -33,7 +33,7 @@ bot.command('start', ctx =>{
 bot.command('features', ctx =>{
     console.log(ctx.from)
     bot.telegram.sendMessage(ctx.chat.id, `/eth For ETH price\n/btc For BTC price\n/weather For weather\n/sol For SOL price`)
-})
+});
 //check ethereum rate
 bot.command('eth', ctx =>{
     var rate;
@@ -46,7 +46,7 @@ bot.command('eth', ctx =>{
         bot.telegram.sendMessage(ctx.chat.id, message, {
         })
     })
-})
+});
 bot.command('btc', ctx =>{
     var rate;
     console.log(ctx.from);
@@ -70,46 +70,51 @@ bot.command('sol', ctx =>{
         bot.telegram.sendMessage(ctx.chat.id, message, {
         })
     })
+});
+// bot.launch();
+const appID = (process.env.appID);
+const appURL = (city) => ( 
+    `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&&appid=${appID}`
+);
+const weatherFeedback = (name, main, weather, wind, clouds) => (
+    `Weather in ${name}\n
+    ${weather.main}-${weather.description}\n
+    Temperature: ${main.temp}°C\n
+    Pressure: ${main.pressure}hpa\n
+    Humidity: ${main.humidity}%\n
+    Wind: ${wind.speed}m/s\n
+    Clouuds: ${clouds.all}%
+    `
+);
+const getCityWeather = (chatId, city) =>{
+    const endpoint = appURL(city);
+
+    axios.get(endpoint).then((resp) => {
+        const { name, main, weather, wind, clouds } = resp.data;
+
+bot.sendMessage(
+    chatId, 
+    weatherFeedback(name, main, wind, clouds), {
+        parse_mode: "HTML"
+    }
+);}, 
+    error => {
+        console.log("error", error);
+        bot.telegram.sendMessage(
+            chatId, `Weather for ${city} unavailable🤨`, {
+                parse_mode: "HTML"
+        }
+    );
+});
+}
+
+// check weather
+bot.command('weather', ctx =>{
+
 })
 
-// const appID = (process.env.appID);
-// const appURL = (city) => ( 
-//     `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&&appid=${appID}`
-// );
-// const weatherFeedback = (name, main, weather, wind, clouds) => (
-//     `Weather in ${name}\n
-//     ${weather.main}-${weather.description}\n
-//     Temperature: ${main.temp}°C\n
-//     Pressure: ${main.pressure}hpa\n
-//     Humidity: ${main.humidity}%\n
-//     Wind: ${wind.speed}m/s\n
-//     Clouuds: ${clouds.all}%
-//     `
-// );
-// const getCityWeather = (chatId, city) =>{
-//     const endpoint = appURL(city);
+//add clear feature: that clears all messages
 
-//     axios.get(endpoint).then((resp) => {
-//         const { name, main, weather, wind, clouds } = resp.data;
-//     })
-// }
-// bot.sendMessage(
-//     chatId, 
-//     weatherFeedback(name, main, wind, clouds), {
-//         parse_mode: "HTML"
-//     }
-// ); error => {
-//     console.log("error", error);
-//     bot.telegram.sendMessage(
-//         chatId, `Weather for ${city} unavailable🤨`, {
+//add meme feature
 
-//         }
-//     )
-// }
-
-// bot.command('weather', ctx =>{
-
-// })
-
-//check weather
-bot.launch();
+//add anime feature: 
