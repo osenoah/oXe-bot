@@ -75,7 +75,7 @@ bot.command('sol', ctx =>{
 
 
 // check weather
-bot.command('weather', ctx =>{
+bot.command('weather', ctx, msg, match =>{
     const appID = (process.env.appID);
     const appURL = (city) => ( 
         `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&&appid=${appID}`
@@ -96,7 +96,7 @@ bot.command('weather', ctx =>{
         axios.get(endpoint).then((resp) => {
             const { name, main, wind, clouds } = resp.data;
     
-    bot.sendMessage(
+    bot.telegram.sendMessage(
         chatId, 
         weatherFeedback(name, main, wind, clouds), {
             parse_mode: "HTML"
