@@ -17,10 +17,10 @@ expressApp.get('/', (req, res)=>{
     res.sendFile(path.join(__dirname + '/index.html'))
 });
 
-expressApp.use(bot.webhookCallback('/secret-path'))
-bot.telegram.setWebhook(`https://oxe-bot.onrender.com/bot${token}/secret-path`);
+// expressApp.use(bot.webhookCallback('/secret-path'))
+// bot.telegram.setWebhook(`https://localhost:3000bot${token}/secret-path`);
 
-expressApp.listen(port, ()=> console.log(`Listening on ${port}`));
+// expressApp.listen(port, ()=> console.log(`Listening on ${port}`));
 
 //start process
 bot.command('start', ctx =>{
@@ -71,7 +71,7 @@ bot.command('sol', ctx =>{
         })
     })
 });
-// bot.launch();
+bot.launch();
 const appID = (process.env.appID);
 const appURL = (city) => ( 
     `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&&appid=${appID}`
@@ -117,4 +117,4 @@ bot.command('weather', ctx =>{
 
 //add meme feature
 
-//add anime feature: 
+//add anime feature:
