@@ -21,7 +21,7 @@ const { error } = require('console');
 const bot = new Telegraf(process.env.BOT_TOKEN)
 
 expressApp.get('/', (req, res)=>{
-    res.sendFile(path.join(__dirname + '/index.html'))
+    res.sendFile(path.join(__dirname + '/index.json'))
 });
 
 expressApp.listen(port, ()=> myLog.log(`Listening on ${port}`));
@@ -133,5 +133,9 @@ bot.command('weather', ctx =>{
 
 //add meme feature
 
-//add anime feature:
+//add anime feature: bring up manga panels
+bot.command('manga', ctx => {
+    myLog.log(ctx.from)
+
+})
 bot.launch();
