@@ -131,10 +131,13 @@ bot.command('weather', ctx =>{
 
 //add clear feature: that clears all messages
 
+//add mention feature
+
+//add health advice
+
 //add meme feature
 
 //add anime feature: bring up manga panels OR a RANDOM anime Image.
-
 const { default: Undici } = require('undici');
 
 const vog = (search) => (`https://api.panelsdesu.com/v1/search?q=${search}`);
@@ -147,31 +150,28 @@ const getRandomPanel = (panels) => {
     const randomIndex = Math.floor(Math.random() * panels.length);
     return panels[randomIndex]; 
 };
-console.log(des);
+// myLog.log(des);
 const aniP = (search, chatId) => {
-    
     const fig = vog(search);
-    axios.get(fig).then((resp) => { 
-        const { panels }= resp.data;
-        myLog.log("API Endpoint:", fig);
-        myLog.log("API Response:", panels);
-
+        axios.get(fig).then((resp) => { 
+            const { panels }= resp.data;
+                myLog.log("API Endpoint:", fig);
+                myLog.log("API Response:", panels);
         if (panels && panels.length > 0) {
             const randomPanel = getRandomPanel(panels);
             const photoUrl = getPhotoUrl(randomPanel); 
             const description = des(randomPanel);
-
-bot.telegram.sendPhoto(
-    chatId, photoUrl,
-    des(panels[0]), {
-        caption: description,
-        parse_mode: "HTML"
-    }
-);} else {
-    bot.telegram.sendMessage(
-            chatId, `Theme for <b>${search}</b> unavailable🤨`, {
-                parse_mode: "HTML"
-        }
+                bot.telegram.sendPhoto(
+                    chatId, photoUrl,
+                    des(panels[0]), {
+                        caption: description,
+                        parse_mode: "HTML"
+                    }
+    );} else {
+        bot.telegram.sendMessage(
+                chatId, `No theme for <b>${search}</b> unavailable🤨`, {
+                    parse_mode: "HTML"
+            }
     );
 }
     error => {
