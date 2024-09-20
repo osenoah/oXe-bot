@@ -1,3 +1,4 @@
 .env
 botStdout.txt
 errStdErr.txt
+package-lock.json
