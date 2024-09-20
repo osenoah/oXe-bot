@@ -118,7 +118,7 @@ bot.telegram.sendMessage(
 bot.command('weather', ctx =>{
     myLog.log(ctx.from)
     const chatId = ctx.chat.id;
-    const city = ctx.message.text.split(' ')[[1]];
+    const city = ctx.message.text.split(' ').slice(1).join(' ');
 
     if (city === undefined) {
         bot.telegram.sendMessage(
@@ -136,6 +136,8 @@ bot.command('weather', ctx =>{
 //add health advice
 
 //add meme feature
+
+//add gif feature
 
 //add anime feature: bring up manga panels OR a RANDOM anime Image.
 const { default: Undici } = require('undici');
