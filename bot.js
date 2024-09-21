@@ -38,7 +38,7 @@ bot.command('features', ctx =>{
     myLog.log(ctx.from)
     bot.telegram.sendMessage(ctx.chat.id, `/eth For ETH price\n/btc For BTC price\n/weather For weather\n/sol For SOL price`)
 });
-//check ethereum rate
+//check ethereum price
 bot.command('eth', ctx =>{
     var rate;
     myLog.log(ctx.from);
@@ -51,6 +51,7 @@ bot.command('eth', ctx =>{
         })
     })
 });
+//check bitcoin price
 bot.command('btc', ctx =>{
     var rate;
     myLog.log(ctx.from);
@@ -63,6 +64,7 @@ bot.command('btc', ctx =>{
         })
     })
 })
+//check sol price
 bot.command('sol', ctx =>{
     var rate;
     myLog.log(ctx.from);
@@ -130,8 +132,16 @@ bot.command('weather', ctx =>{
 }});
 
 //add clear feature: that clears all messages
+bot.command('clear', ctx => {
+    myLog.log(ctx.from, 'Successfully deleted all messages'),
+    bot.telegram.deleteMessages(ctx.chat.id, [100])
+})
 
 //add mention feature
+bot.textMention((ctx)=> {
+    myLog.log(ctx.from), 
+   bot.telegram.sendMessage(ctx.chat.id, `${userInfo.username} spotted. FBI open up!!!!\n\nKidding😶, send /features.`) 
+})
 
 //add health advice
 
@@ -139,8 +149,11 @@ bot.command('weather', ctx =>{
 
 //add gif feature
 
+//add openai(chat) feature
+
 //anime feature: bring up manga panels OR a RANDOM anime Image.
 const { default: Undici } = require('undici');
+const { userInfo } = require('os');
 
 const vog = (search) => (`https://api.panelsdesu.com/v1/search?q=${search}`);
 
@@ -149,7 +162,7 @@ const des = (panels) => {
 };
 const getPhotoUrl = (panels) => `${panels.image_url}`;
 const getRandomPanel = (panels) => {
-    const randomIndex = Math.floor(Math.random() * panels.length);
+const randomIndex = Math.floor(Math.random() * panels.length);
     return panels[randomIndex]; 
 };
 // myLog.log(des);
@@ -158,7 +171,7 @@ const aniP = (search, chatId) => {
         axios.get(fig).then((resp) => { 
             const { panels }= resp.data;
                 myLog.log("API Endpoint:", fig);
-                myLog.log("API Response:", panels);
+                // myLog.log("API Response:", panels);
         if (panels && panels.length > 0) {
             const randomPanel = getRandomPanel(panels);
             const photoUrl = getPhotoUrl(randomPanel); 
@@ -171,31 +184,29 @@ const aniP = (search, chatId) => {
                     }
     );} else {
         bot.telegram.sendMessage(
-                chatId, `No theme for <b>${search}</b> unavailable🤨`, {
+                chatId, `No theme for <b>${search}</b>🤨`, {
                     parse_mode: "HTML"
             }
     );
-}
-    error => {
+} error => {
         myLog.log("error", error);
          bot.telegram.sendMessage(
          chatId, `Theme for <b>${search}</b> unavailable 🤨`, {
         parse_mode: "HTML"
-});
-}
+})}
 })};
+
 bot.command('manga', ctx => {
     myLog.log(ctx.from)
     const chatId = ctx.chat.id;
     const search = ctx.message.text.split(' ')[1];
-
-    if(search === undefined) {
-        bot.telegram.sendMessage(
-            chatId, `What would you want to see😏\n/manga 'theme'`
-        );
-        return;
-    } else {
-    aniP(search, chatId);
-}
-})
+        if(search === undefined) {
+            bot.telegram.sendMessage(
+                chatId, `What would you want to see😏\n/manga 'theme'`
+            );
+            return;
+        } else {
+        aniP(search, chatId);
+    }
+    })
 bot.launch();
