@@ -118,7 +118,7 @@ bot.telegram.sendMessage(
 bot.command('weather', ctx =>{
     myLog.log(ctx.from)
     const chatId = ctx.chat.id;
-    const city = ctx.message.text.split(' ').slice(1).join(' ');
+    const city = ctx.message.text.split(' ')[1];
 
     if (city === undefined) {
         bot.telegram.sendMessage(
@@ -139,7 +139,7 @@ bot.command('weather', ctx =>{
 
 //add gif feature
 
-//add anime feature: bring up manga panels OR a RANDOM anime Image.
+//anime feature: bring up manga panels OR a RANDOM anime Image.
 const { default: Undici } = require('undici');
 
 const vog = (search) => (`https://api.panelsdesu.com/v1/search?q=${search}`);
