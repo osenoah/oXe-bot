@@ -2,3 +2,5 @@
 botStdout.txt
 errStdErr.txt
 package-lock.json
+.vscode
+launch.json
