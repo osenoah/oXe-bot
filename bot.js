@@ -3,8 +3,10 @@ const expressApp = express();
 const path = require('path');
 const axios = require('axios');
 const port = process.env.PORT || 3000;
+const openai = require('openai')
 expressApp.use(express.static('static'));
 expressApp.use(express.json());
+
 // const token = ();
 require('dotenv').config();
 
@@ -79,11 +81,11 @@ bot.command('sol', ctx =>{
 });
 
 
+// check weather
 const appID = (process.env.APP_ID);
 const appURL = (city) => ( 
     `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&&appid=${appID}`
 );
-
 
 const weatherFeedback = (name, main, weather, wind, clouds) => (
     `Weather in <b>${name}</b>\n
@@ -116,7 +118,7 @@ bot.telegram.sendMessage(
     );
 });
 }
-// check weather
+
 bot.command('weather', ctx =>{
     myLog.log(ctx.from)
     const chatId = ctx.chat.id;
@@ -155,10 +157,26 @@ bot.command('clear', ctx => {
 //add meme feature
 
 //add openai(chat) feature
+const oaiKey = (process.env.OPEN_AI)
+
+bot.command('aichat', ctx =>{
+    const chat = ctx.chat.id
+    const reply = ctx.text
+
+    OpenAI.completion(prompt=reply, temperature=0.5)
+    .then((res) => {
+        bot.telegram.sendMessage(chat, res);
+    })
+    .catch((err) => {
+        console.error(err);
+    })
+} )
+
 
 //anime feature: bring up manga panels OR a RANDOM anime Image.
 const { default: Undici } = require('undici');
 const { userInfo } = require('os');
+const { default: OpenAI } = require('openai/src/index.js');
 
 const vog = (search) => (`https://api.panelsdesu.com/v1/search?q=${search}`);
 
