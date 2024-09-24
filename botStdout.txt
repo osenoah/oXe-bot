@@ -1,0 +1,16 @@
+Listening on 3000
+{
+  id: 6128497517,
+  is_bot: false,
+  first_name: '0xOse',
+  username: 'Osee_X',
+  language_code: 'en'
+}
+{
+  id: 6128497517,
+  is_bot: false,
+  first_name: '0xOse',
+  username: 'Osee_X',
+  language_code: 'en'
+}
+API Endpoint: http://api.openweathermap.org/data/2.5/weather?q=togo&units=metric&&appid=e201525bbcacc0ebb988b99a3b2b5a6d
