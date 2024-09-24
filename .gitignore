@@ -4,5 +4,4 @@ errStdErr.txt
 package-lock.json
 .vscode
 launch.json
-vercel.json
 node_modules
