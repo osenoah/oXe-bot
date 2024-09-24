@@ -133,16 +133,16 @@ bot.command('weather', ctx =>{
 
 //add clear feature: that clears all messages
 
-// bot.command('clear', ctx => {
-//     myLog.log(ctx.from, 'Successfully cleared all messages');
-//     const messageId = ctx.message.message_id;
-//         for (let i = messageId - 1000; i <= 1000; i++){
-//             try { bot.telegram.deleteMessage(ctx.chat.id, i)
-//         }
-//             catch(error){
-//                 myLog.log(`Error`)
-//             }
-// }})
+bot.command('clear', ctx => {
+    myLog.log(ctx.from, 'Successfully cleared all messages');
+    const messageId = ctx.message.message_id;
+        for (let i = messageId - 1000; i <= 1000; i++){
+            try { bot.telegram.deleteMessage(ctx.chat.id, i)
+        }
+            catch(error){
+                myLog.log(`Error`)
+            }
+}})
 
 //add mention feature
 // bot.textMention((ctx)=> {
@@ -153,8 +153,6 @@ bot.command('weather', ctx =>{
 //add health advice
 
 //add meme feature
-
-//add gif feature
 
 //add openai(chat) feature
 
