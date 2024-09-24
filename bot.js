@@ -159,17 +159,11 @@ bot.command('clear', ctx => {
 //add openai(chat) feature
 const oaiKey = (process.env.OPEN_AI)
 
-bot.command('aichat', ctx =>{
-    const chat = ctx.chat.id
-    const reply = ctx.text
-
-    OpenAI.completion(prompt=reply, temperature=0.5)
-    .then((res) => {
-        bot.telegram.sendMessage(chat, res);
-    })
-    .catch((err) => {
-        console.error(err);
-    })
+bot.command('ai-chat', ctx =>{
+    const chatId = ctx.chat.id
+    const user = ctx.chat.username
+    bot.telegram.sendMessage(chatId, `You no go use AI ke😏\nUse /ai "What you need to be explained"`)
+    
 } )
 
 
