@@ -2,8 +2,8 @@ const express = require('express');
 const expressApp = express();
 const path = require('path');
 const axios = require('axios');
-const port = process.env.PORT || 3000;
-const openai = require('openai')
+const port = process.env.PORT || 8080;
+const { default: OpenAI } = require('openai');
 expressApp.use(express.static('static'));
 expressApp.use(express.json());
 
@@ -13,7 +13,7 @@ require('dotenv').config();
 const { Console } = require("console");
 const fs = require("fs");
 const myLog = new Console({
-    stdout: fs.createWriteStream("botStdout.txt"),
+    stdout: fs.createWriteStream("errStdErr.txt"),
     stderr: fs.createWriteStream("errStdErr.txt")
 })
 
@@ -26,7 +26,7 @@ expressApp.get('/', (req, res)=>{
     res.sendFile(path.join(__dirname + '/index.json'))
 });
 
-expressApp.listen(port, ()=> myLog.log(`Listening on ${port}`));
+// expressApp.listen(port, ()=> myLog.log(`Listening on ${port}`));
 
 //start process
 bot.command('start', ctx =>{
@@ -157,20 +157,29 @@ bot.command('clear', ctx => {
 //add meme feature
 
 //add openai(chat) feature
-const oaiKey = (process.env.OPEN_AI)
 
-bot.command('ai-chat', ctx =>{
+const openai = new OpenAI({apiKey: process.env.OPEN_AI})
+
+bot.command('ai', async (ctx) =>{
     const chatId = ctx.chat.id
     const user = ctx.chat.username
-    bot.telegram.sendMessage(chatId, `You no go use AI ke😏\nUse /ai "What you need to be explained"`)
-    
+    const text = ctx.text
+    const response = await openai.chat.completions.create({
+        model:'gpt-3.5-turbo',
+        prompt:`Using Domain Expansion'Infinite Wisdom' to explain: ${text}\n\n YA:'`,
+        "max_tokens": 60,
+        "temperature": 0,
+        "n": 1,
+        "stream": false,
+    })
+    const res = response.data.choices[0].text
+    bot.telegram.sendMessage(chatId, res, `You 👉🏾 ${user} no go use AI ke🌚\nUse /ai "What you need to be explained"`)
 } )
 
 
 //anime feature: bring up manga panels OR a RANDOM anime Image.
 const { default: Undici } = require('undici');
 const { userInfo } = require('os');
-const { default: OpenAI } = require('openai/src/index.js');
 
 const vog = (search) => (`https://api.panelsdesu.com/v1/search?q=${search}`);
 
