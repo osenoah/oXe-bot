@@ -167,10 +167,7 @@ bot.command('ai', async (ctx) =>{
     const response = await openai.chat.completions.create({
         model:'gpt-3.5-turbo',
         prompt:`Using Domain Expansion'Infinite Wisdom' to explain: ${text}\n\n YA:'`,
-        "max_tokens": 60,
-        "temperature": 0,
-        "n": 1,
-        "stream": false,
+        "temperature": 0.5,
     })
     const res = response.data.choices[0].text
     bot.telegram.sendMessage(chatId, res, `You 👉🏾 ${user} no go use AI ke🌚\nUse /ai "What you need to be explained"`)
