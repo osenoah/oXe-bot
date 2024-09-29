@@ -4,24 +4,25 @@ const path = require('path');
 const axios = require('axios');
 const port = process.env.PORT || 8080;
 const { default: OpenAI } = require('openai');
-expressApp.use(express.static('static'));
-expressApp.use(express.json());
+const fs = require("fs");
 
 // const token = ();
 require('dotenv').config();
 
 const { Console } = require("console");
-const fs = require("fs");
+const { error } = require('console');
 const myLog = new Console({
     stdout: fs.createWriteStream("errStdErr.txt"),
     stderr: fs.createWriteStream("errStdErr.txt")
 })
 
-const { Telegraf } = require('telegraf');
-const { error } = require('console');
 
+const { Telegraf } = require('telegraf');
 const bot = new Telegraf(process.env.BOT_TOKEN)
 
+
+expressApp.use(express.static('static'));
+expressApp.use(express.json());
 expressApp.get('/', (req, res)=>{
     res.sendFile(path.join(__dirname + '/index.json'))
 });
@@ -40,6 +41,7 @@ bot.command('features', ctx =>{
     myLog.log(ctx.from)
     bot.telegram.sendMessage(ctx.chat.id, `/eth For ETH price\n/btc For BTC price\n/weather For weather\n/sol For SOL price`)
 });
+
 //check ethereum price
 bot.command('eth', ctx =>{
     var rate;
@@ -133,8 +135,8 @@ bot.command('weather', ctx =>{
     getCityWeather(chatId, city);
 }});
 
-//add clear feature: that clears all messages
 
+//add clear feature: that clears all messages
 bot.command('clear', ctx => {
     myLog.log(ctx.from, 'Successfully cleared all messages');
     const messageId = ctx.message.message_id;
@@ -157,9 +159,7 @@ bot.command('clear', ctx => {
 //add meme feature
 
 //add openai(chat) feature
-
 const openai = new OpenAI({apiKey: process.env.OPEN_AI})
-
 bot.command('ai', async (ctx) =>{
     const chatId = ctx.chat.id
     const user = ctx.chat.username
@@ -175,11 +175,7 @@ bot.command('ai', async (ctx) =>{
 
 
 //anime feature: bring up manga panels OR a RANDOM anime Image.
-const { default: Undici } = require('undici');
-const { userInfo } = require('os');
-
 const vog = (search) => (`https://api.panelsdesu.com/v1/search?q=${search}`);
-
 const des = (panels) => {
     `${panels.description}`
 };
@@ -218,7 +214,6 @@ const aniP = (search, chatId) => {
         parse_mode: "HTML"
 })}
 })};
-
 bot.command('manga', ctx => {
     myLog.log(ctx.from)
     const chatId = ctx.chat.id;
@@ -232,4 +227,5 @@ bot.command('manga', ctx => {
         aniP(search, chatId);
     }
     })
+
 bot.launch();
