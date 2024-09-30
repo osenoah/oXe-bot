@@ -6,8 +6,7 @@ const port = process.env.PORT || 8080;
 const { default: OpenAI } = require('openai');
 const fs = require("fs");
 
-// const token = ();
-require('dotenv').config();
+const token = require('dotenv').config();
 
 const { Console } = require("console");
 const { error } = require('console');
