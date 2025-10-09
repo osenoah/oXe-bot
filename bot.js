@@ -39,7 +39,7 @@ bot.command('start', ctx =>{
 //features
 bot.command('features', ctx =>{
     myLog.log(ctx.from)
-    bot.telegram.sendMessage(ctx.chat.id, `/eth For ETH price\n/btc For BTC price\n/sol For SOL price\n/weather For weather\n/manga To pull up an anime manga\n/ai For an AI Chat`)
+    bot.telegram.sendMessage(ctx.chat.id, `/eth For ETH price\n/btc For BTC price\n/sol For SOL price\n/weather For weather\n/manga To pull up an anime manga\n/chatgpt For an AI Chat`)
 });
 
 //check ETH price
@@ -55,6 +55,7 @@ bot.command('eth', ctx =>{
         })
     })
 });
+
 //check BTC price
 bot.command('btc', ctx =>{
     var rate;
@@ -67,7 +68,8 @@ bot.command('btc', ctx =>{
         bot.telegram.sendMessage(ctx.chat.id, message, {
         })
     })
-})
+});
+
 //check SOL price
 bot.command('sol', ctx =>{
     var rate;
@@ -93,21 +95,6 @@ bot.command('weather', ctx => {
         chatId, 
         `Which city would you like the weather for?🌤️`
     );
-});
-
-
-bot.on('text', ctx => {
-    const chatId = ctx.chat.id;
-    const userState = userStates.get(chatId);
-    
-    
-    if (userState && userState.waitingFor === 'weather_city') {
-        const city = ctx.message.text.trim();
-        
-        userStates.delete(chatId);
-        
-        getCityWeather(chatId, city);
-    }
 });
 
 
@@ -150,24 +137,24 @@ bot.telegram.sendMessage(
 
 
 
-//add openai(chat) feature
-const openai = new OpenAI({apiKey: process.env.OPEN_AI})
-bot.command('ai', async (ctx) =>{
-    const chatId = ctx.chat.id
-    const user = ctx.chat.username
-    const text = ctx.text
-    const response = await openai.chat.completions.create({
-        model:'gpt-3.5-turbo',
-        prompt:`Using Domain Expansion'Infinite Wisdom' to explain: ${text}\n\n YA:'`,
-        "temperature": 0.5,
-    })
-    const res = response.data.choices[0].text
-    bot.telegram.sendMessage(chatId, res, `You 👉🏾 ${user} no go use AI ke🌚\nUse /ai "What you need to be explained"`)
-} )
+// AI CHAT
+const openai = new OpenAI({apiKey: process.env.OPEN_AI});
+
+bot.command('chatgpt', ctx => {
+    myLog.log(ctx.from);
+    const chatId = ctx.chat.id;
+
+    userStates.set(chatId, {waitingFor: 'chatgpt_question'});
+    
+    bot.telegram.sendMessage(
+        chatId, 
+        `What would you like me to explain? 🤖`
+    );
+});
 
 
 
-// OLD CODE
+// OLD ANIME CODE
 /* //anime feature: bring up manga panels OR a RANDOM anime Image.
         const vog = (search) => (`https://api.panelsdesu.com/v1/search?q=${search}`);
         const des = (panels) => {
@@ -240,21 +227,6 @@ bot.command('manga', ctx => {
     );
 });
 
-
-bot.on('text', ctx => {
-    const chatId = ctx.chat.id;
-    const userState = userStates.get(chatId);
-    
-    
-    if (userState && userState.waitingFor === 'manga_theme') {
-        const search = ctx.message.text.trim();
-        
-        userStates.delete(chatId);
-        
-        aniP(search, chatId);
-    }
-});
-
 const vog = (search) => (`https://api.panelsdesu.com/v1/search?q=${search}`);
 const des = (panels) => {
     `${panels.description}`
@@ -298,6 +270,62 @@ const aniP = (search, chatId) => {
         );
     });
 };
+
+
+
+//BOT ON
+bot.on('text', ctx => {
+    const chatId = ctx.chat.id;
+    const userState = userStates.get(chatId);
+    
+    // Handle ChatGPT question
+    if (userState && userState.waitingFor === 'chatgpt_question') {
+        const question = ctx.message.text.trim();
+        
+        userStates.delete(chatId);
+        
+        bot.telegram.sendMessage(chatId, '🤔 Calm...');
+        
+        openai.chat.completions.create({
+            model: 'gpt-3.5-turbo',
+            messages: [
+                {
+                    role: 'system',
+                    content: question
+                },
+                {
+                    role: 'user',
+                    content: question
+                }
+            ],
+            temperature: 0.7,
+        })
+        .then(response => {
+            const aiResponse = response.choices[0].message.content;
+            bot.telegram.sendMessage(chatId, aiResponse);
+        })
+        .catch(error => {
+            myLog.log("OpenAI error:", error);
+            bot.telegram.sendMessage(
+                chatId, 
+                `Sorry, I couldn't process that. BooHoo 😢`
+            );
+        });
+    }
+    // Handle weather city
+    else if (userState && userState.waitingFor === 'weather_city') {
+        const city = ctx.message.text.trim();
+        userStates.delete(chatId);
+        getCityWeather(chatId, city);
+    }
+    // Handle manga theme
+    else if (userState && userState.waitingFor === 'manga_theme') {
+        const search = ctx.message.text.trim();
+        userStates.delete(chatId);
+        aniP(search, chatId);
+    }
+});
+
 
 bot.launch();
 
