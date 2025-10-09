@@ -5,7 +5,6 @@ const axios = require('axios');
 const port = process.env.PORT || 8080;
 const { default: OpenAI } = require('openai');
 const fs = require("fs");
-// Add this at the top with your other variables
 const userStates = new Map(); // Track user conversation states
 
 const token = require('dotenv').config();
@@ -220,38 +219,35 @@ bot.command('ai', async (ctx) =>{
 
 
 
-// Replace your existing manga command with this:
+//anime feature: bring up manga panels OR a RANDOM anime Image.
 bot.command('manga', ctx => {
     myLog.log(ctx.from)
     const chatId = ctx.chat.id;
     
-    // Set user state to waiting for manga theme
-    userStates.set(chatId, { waitingFor: 'manga_theme' });
+   
+    userStates.set(chatId, {waitingFor: 'manga_theme'});
     
     bot.telegram.sendMessage(
         chatId, 
-        `What theme would you like to see? 😏\nJust reply with the theme name.`
+        `What theme would you like to see? 😏`
     );
 });
 
-// Add this new handler to catch regular text messages
+
 bot.on('text', ctx => {
     const chatId = ctx.chat.id;
     const userState = userStates.get(chatId);
     
-    // Check if user is in manga theme waiting state
+    
     if (userState && userState.waitingFor === 'manga_theme') {
         const search = ctx.message.text.trim();
         
-        // Clear the state
         userStates.delete(chatId);
         
-        // Get the manga panel
         aniP(search, chatId);
     }
 });
 
-// Keep your existing aniP function as is
 const vog = (search) => (`https://api.panelsdesu.com/v1/search?q=${search}`);
 const des = (panels) => {
     `${panels.description}`
