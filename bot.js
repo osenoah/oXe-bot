@@ -39,7 +39,7 @@ bot.command('start', ctx =>{
 //features
 bot.command('features', ctx =>{
     myLog.log(ctx.from)
-    bot.telegram.sendMessage(ctx.chat.id, `/eth For ETH price\n/btc For BTC price\n/sol For SOL price\n/weather For weather\n/manga To pull up an anime manga\n/chatgpt For an AI Chat`)
+    bot.telegram.sendMessage(ctx.chat.id, `/eth For ETH price\n/btc For BTC price\n/sol For SOL price\n/weather For weather\n/manga To pull up an anime manga\n/gemini For an AI Chat`)
 });
 
 //check ETH price
@@ -139,6 +139,7 @@ bot.telegram.sendMessage(
 
 // AI CHAT
 const openai = new OpenAI({apiKey: process.env.OPEN_AI});
+myLog.log("OpenAI API Key exists:", !!process.env.OPEN_AI);
 
 bot.command('chatgpt', ctx => {
     myLog.log(ctx.from);
@@ -152,6 +153,24 @@ bot.command('chatgpt', ctx => {
     );
 });
 
+// AI but GEMINI
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({model: "gemini-pro"});
+
+    bot.command('gemini', ctx => {
+        myLog.log(ctx.from);
+        const chatId = ctx.chat.id;
+
+        userStates.set(chatId, {waitingFor: 'gemini_question'});
+        
+        bot.telegram.sendMessage(
+            chatId, 
+            `What would you like me to explain? 🤖`
+        );
+    });
 
 
 // OLD ANIME CODE
@@ -278,6 +297,32 @@ bot.on('text', ctx => {
     const chatId = ctx.chat.id;
     const userState = userStates.get(chatId);
     
+    // Handle Gemini
+    if (userState && userState.waitingFor === 'gemini_question') {
+    const question = ctx.message.text.trim();
+    
+    userStates.delete(chatId);
+    
+    bot.telegram.sendMessage(chatId, '🤔 Calm...');
+    
+    
+    const prompt = `You are a helpful assistant using 'Domain Expansion: Infinite Wisdom' to explain things clearly.\n\nUser question: ${question}`;
+    
+    model.generateContent(prompt)
+        .then(result => {
+            const response = result.response;
+            const aiResponse = response.text();
+            bot.telegram.sendMessage(chatId, aiResponse);
+        })
+        .catch(error => {
+            myLog.log("Gemini error:", error.message);
+            bot.telegram.sendMessage(
+                chatId, 
+                `Sorry, I couldn't process that right now. Please try again! 😢`
+            );
+        });
+    };
+
     // Handle ChatGPT question
     if (userState && userState.waitingFor === 'chatgpt_question') {
         const question = ctx.message.text.trim();
@@ -306,6 +351,11 @@ bot.on('text', ctx => {
         })
         .catch(error => {
             myLog.log("OpenAI error:", error);
+            myLog.log("Full OpenAI error:", JSON.stringify(error, null, 2));
+            myLog.log("Error message:", error.message);
+            myLog.log("Error status:", error.status);
+            myLog.log("Error code:", error.code);
+            
             bot.telegram.sendMessage(
                 chatId, 
                 `Sorry, I couldn't process that. BooHoo 😢`
