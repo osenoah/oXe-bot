@@ -83,6 +83,34 @@ bot.command('sol', ctx =>{
 });
 
 // check weather
+bot.command('weather', ctx => {
+    myLog.log(ctx.from)
+    const chatId = ctx.chat.id;
+    
+    userStates.set(chatId, { waitingFor:'weather_city'});
+    
+    bot.telegram.sendMessage(
+        chatId, 
+        `Which city would you like the weather for?🌤️`
+    );
+});
+
+
+bot.on('text', ctx => {
+    const chatId = ctx.chat.id;
+    const userState = userStates.get(chatId);
+    
+    
+    if (userState && userState.waitingFor === 'weather_city') {
+        const city = ctx.message.text.trim();
+        
+        userStates.delete(chatId);
+        
+        getCityWeather(chatId, city);
+    }
+});
+
+
 const appID = (process.env.APP_ID);
 const appURL = (city) => ( 
     `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&&appid=${appID}`
@@ -120,19 +148,6 @@ bot.telegram.sendMessage(
 });
 }
 
-bot.command('weather', ctx =>{
-    myLog.log(ctx.from)
-    const chatId = ctx.chat.id;
-    const city = ctx.message.text.split(' ')[1];
-
-    if (city === undefined) {
-        bot.telegram.sendMessage(
-            chatId, `Please provide city name as \n/weather 'city'`
-        );
-        return;
-    } else {
-    getCityWeather(chatId, city);
-}});
 
 
 //add openai(chat) feature
@@ -149,6 +164,8 @@ bot.command('ai', async (ctx) =>{
     const res = response.data.choices[0].text
     bot.telegram.sendMessage(chatId, res, `You 👉🏾 ${user} no go use AI ke🌚\nUse /ai "What you need to be explained"`)
 } )
+
+
 
 // OLD CODE
 /* //anime feature: bring up manga panels OR a RANDOM anime Image.
@@ -209,7 +226,7 @@ bot.command('ai', async (ctx) =>{
 
 
 
-//anime feature: bring up manga panels OR a RANDOM anime Image.
+//UPDATED anime feature: bring up manga panels OR a RANDOM anime Image.
 bot.command('manga', ctx => {
     myLog.log(ctx.from)
     const chatId = ctx.chat.id;
