@@ -157,20 +157,20 @@ bot.telegram.sendMessage(
 
 
 // AI CHAT
-const openai = new OpenAI({apiKey: process.env.OPEN_AI});
-myLog.log("OpenAI API Key exists:", !!process.env.OPEN_AI);
+// const openai = new OpenAI({apiKey: process.env.OPEN_AI});
+// myLog.log("OpenAI API Key exists:", !!process.env.OPEN_AI);
 
-bot.command('chatgpt', ctx => {
-    myLog.log(ctx.from);
-    const chatId = ctx.chat.id;
+// bot.command('chatgpt', ctx => {
+//     myLog.log(ctx.from);
+//     const chatId = ctx.chat.id;
 
-    userStates.set(chatId, {waitingFor: 'chatgpt_question'});
+//     userStates.set(chatId, {waitingFor: 'chatgpt_question'});
     
-    bot.telegram.sendMessage(
-        chatId, 
-        `What would you like me to explain? 🤖`
-    );
-});
+//     bot.telegram.sendMessage(
+//         chatId, 
+//         `What would you like me to explain? 🤖`
+//     );
+// });
 
 // AI but GEMINI
 const { GoogleGenerativeAI } = require("@google/generative-ai");
@@ -315,7 +315,8 @@ const aniP = (search, chatId) => {
 bot.on('text', ctx => {
     const chatId = ctx.chat.id;
     const userState = userStates.get(chatId);
-    
+
+    // Handles Gemini
    if (userState && userState.waitingFor === 'gemini_question') {
     const question = ctx.message.text.trim();
     
@@ -323,21 +324,19 @@ bot.on('text', ctx => {
     
     bot.telegram.sendMessage(chatId, '🤔 Calm...');
     
-    const prompt = `You are a helpful assistant using 'Domain Expansion: Infinite Wisdom' to explain things clearly.\n\nUser question: ${question}`;
+    const prompt = `Explain\n\nUser question: ${question}`;
     
     model.generateContent(prompt)
         .then(result => {
             const response = result.response;
             const aiResponse = response.text();
             
-            // Split message if it's too long
             const chunks = splitMessage(aiResponse);
             
-            // Send each chunk
             chunks.forEach((chunk, index) => {
                 setTimeout(() => {
                     bot.telegram.sendMessage(chatId, chunk);
-                }, index * 500); // 500ms delay between messages
+                }, index * 500); 
             });
         })
         .catch(error => {
@@ -350,44 +349,44 @@ bot.on('text', ctx => {
 }
 
     // Handle ChatGPT question
-    if (userState && userState.waitingFor === 'chatgpt_question') {
-        const question = ctx.message.text.trim();
+    // if (userState && userState.waitingFor === 'chatgpt_question') {
+    //     const question = ctx.message.text.trim();
         
-        userStates.delete(chatId);
+    //     userStates.delete(chatId);
         
-        bot.telegram.sendMessage(chatId, '🤔 Calm...');
+    //     bot.telegram.sendMessage(chatId, '🤔 Calm...');
         
-        openai.chat.completions.create({
-            model: 'gpt-3.5-turbo',
-            messages: [
-                {
-                    role: 'system',
-                    content: question
-                },
-                {
-                    role: 'user',
-                    content: question
-                }
-            ],
-            temperature: 0.7,
-        })
-        .then(response => {
-            const aiResponse = response.choices[0].message.content;
-            bot.telegram.sendMessage(chatId, aiResponse);
-        })
-        .catch(error => {
-            myLog.log("OpenAI error:", error);
-            myLog.log("Full OpenAI error:", JSON.stringify(error, null, 2));
-            myLog.log("Error message:", error.message);
-            myLog.log("Error status:", error.status);
-            myLog.log("Error code:", error.code);
+    //     openai.chat.completions.create({
+    //         model: 'gpt-3.5-turbo',
+    //         messages: [
+    //             {
+    //                 role: 'system',
+    //                 content: question
+    //             },
+    //             {
+    //                 role: 'user',
+    //                 content: question
+    //             }
+    //         ],
+    //         temperature: 0.7,
+    //     })
+    //     .then(response => {
+    //         const aiResponse = response.choices[0].message.content;
+    //         bot.telegram.sendMessage(chatId, aiResponse);
+    //     })
+    //     .catch(error => {
+    //         myLog.log("OpenAI error:", error);
+    //         myLog.log("Full OpenAI error:", JSON.stringify(error, null, 2));
+    //         myLog.log("Error message:", error.message);
+    //         myLog.log("Error status:", error.status);
+    //         myLog.log("Error code:", error.code);
             
-            bot.telegram.sendMessage(
-                chatId, 
-                `Sorry, I couldn't process that. BooHoo 😢`
-            );
-        });
-    }
+    //         bot.telegram.sendMessage(
+    //             chatId, 
+    //             `Sorry, I couldn't process that. BooHoo 😢`
+    //         );
+    //     });
+    // }
     // Handle weather city
     else if (userState && userState.waitingFor === 'weather_city') {
         const city = ctx.message.text.trim();
