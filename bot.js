@@ -5,6 +5,8 @@ const axios = require('axios');
 const port = process.env.PORT || 8080;
 const { default: OpenAI } = require('openai');
 const fs = require("fs");
+// Add this at the top with your other variables
+const userStates = new Map(); // Track user conversation states
 
 const token = require('dotenv').config();
 
@@ -38,7 +40,7 @@ bot.command('start', ctx =>{
 //features
 bot.command('features', ctx =>{
     myLog.log(ctx.from)
-    bot.telegram.sendMessage(ctx.chat.id, `/eth For ETH price\n/btc For BTC price\n/weather For weather\n/sol For SOL price`)
+    bot.telegram.sendMessage(ctx.chat.id, `/eth For ETH price\n/btc For BTC price\n/sol For SOL price\n/weather For weather\n/manga "Your Theme" To Pull out an anime manga\n/ai For an AI Chat`)
 });
 
 //check ethereum price
@@ -80,7 +82,6 @@ bot.command('sol', ctx =>{
         })
     })
 });
-
 
 // check weather
 const appID = (process.env.APP_ID);
@@ -135,18 +136,6 @@ bot.command('weather', ctx =>{
 }});
 
 
-//add clear feature: that clears all messages
-bot.command('clear', ctx => {
-    myLog.log(ctx.from, 'Successfully cleared all messages');
-    const messageId = ctx.message.message_id;
-        for (let i = messageId - 1000; i <= 1000; i++){
-            try { bot.telegram.deleteMessage(ctx.chat.id, i)
-        }
-            catch(error){
-                myLog.log(`Error`)
-            }
-}})
-
 //add mention feature
 // bot.textMention((ctx)=> {
 //     myLog.log(ctx.from), 
@@ -172,59 +161,139 @@ bot.command('ai', async (ctx) =>{
     bot.telegram.sendMessage(chatId, res, `You 👉🏾 ${user} no go use AI ke🌚\nUse /ai "What you need to be explained"`)
 } )
 
+// OLD CODE
+/* //anime feature: bring up manga panels OR a RANDOM anime Image.
+        const vog = (search) => (`https://api.panelsdesu.com/v1/search?q=${search}`);
+        const des = (panels) => {
+            `${panels.description}`
+        };
+        const getPhotoUrl = (panels) => `${panels.image_url}`;
+        const getRandomPanel = (panels) => {
+        const randomIndex = Math.floor(Math.random() * panels.length);
+            return panels[randomIndex]; 
+        };
+        // myLog.log(des);
+        const aniP = (search, chatId) => {
+            const fig = vog(search);
+                axios.get(fig).then((resp) => { 
+                    const { panels }= resp.data;
+                        myLog.log("API Endpoint:", fig);
+                        // myLog.log("API Response:", panels);
+                if (panels && panels.length > 0) {
+                    const randomPanel = getRandomPanel(panels);
+                    const photoUrl = getPhotoUrl(randomPanel); 
+                    const description = des(randomPanel);
+                        bot.telegram.sendPhoto(
+                            chatId, photoUrl,
+                            des(panels[0]), {
+                                caption: description,
+                                parse_mode: "HTML"
+                            }
+            );} else {
+                bot.telegram.sendMessage(
+                        chatId, `No theme for <b>${search}</b>🤨`, {
+                            parse_mode: "HTML"
+                    }
+    );
+    } error => {
+            myLog.log("error", error);
+            bot.telegram.sendMessage(
+            chatId, `Theme for <b>${search}</b> unavailable 🤨`, {
+            parse_mode: "HTML"
+    })}
+    })};
+    bot.command('manga', ctx => {
+        myLog.log(ctx.from)
+        const chatId = ctx.chat.id;
+    const search = ctx.message.text.split(' ')[1];
+         if(search === undefined) {
+             bot.telegram.sendMessage(
+                 chatId, `What would you want to see😏\n/manga 'theme'`
+             );
+             return;
+         } else {
+         aniP(search, chatId);
+     }
+     }); */
 
-//anime feature: bring up manga panels OR a RANDOM anime Image.
+
+
+
+
+// Replace your existing manga command with this:
+bot.command('manga', ctx => {
+    myLog.log(ctx.from)
+    const chatId = ctx.chat.id;
+    
+    // Set user state to waiting for manga theme
+    userStates.set(chatId, { waitingFor: 'manga_theme' });
+    
+    bot.telegram.sendMessage(
+        chatId, 
+        `What theme would you like to see? 😏\nJust reply with the theme name.`
+    );
+});
+
+// Add this new handler to catch regular text messages
+bot.on('text', ctx => {
+    const chatId = ctx.chat.id;
+    const userState = userStates.get(chatId);
+    
+    // Check if user is in manga theme waiting state
+    if (userState && userState.waitingFor === 'manga_theme') {
+        const search = ctx.message.text.trim();
+        
+        // Clear the state
+        userStates.delete(chatId);
+        
+        // Get the manga panel
+        aniP(search, chatId);
+    }
+});
+
+// Keep your existing aniP function as is
 const vog = (search) => (`https://api.panelsdesu.com/v1/search?q=${search}`);
 const des = (panels) => {
     `${panels.description}`
 };
 const getPhotoUrl = (panels) => `${panels.image_url}`;
 const getRandomPanel = (panels) => {
-const randomIndex = Math.floor(Math.random() * panels.length);
+    const randomIndex = Math.floor(Math.random() * panels.length);
     return panels[randomIndex]; 
 };
-// myLog.log(des);
+
 const aniP = (search, chatId) => {
     const fig = vog(search);
-        axios.get(fig).then((resp) => { 
-            const { panels }= resp.data;
-                myLog.log("API Endpoint:", fig);
-                // myLog.log("API Response:", panels);
+    axios.get(fig).then((resp) => { 
+        const { panels }= resp.data;
+        myLog.log("API Endpoint:", fig);
+        
         if (panels && panels.length > 0) {
             const randomPanel = getRandomPanel(panels);
             const photoUrl = getPhotoUrl(randomPanel); 
             const description = des(randomPanel);
-                bot.telegram.sendPhoto(
-                    chatId, photoUrl,
-                    des(panels[0]), {
-                        caption: description,
-                        parse_mode: "HTML"
-                    }
-    );} else {
-        bot.telegram.sendMessage(
-                chatId, `No theme for <b>${search}</b>🤨`, {
+            
+            bot.telegram.sendPhoto(
+                chatId, photoUrl, {
+                    caption: description,
                     parse_mode: "HTML"
-            }
-    );
-} error => {
-        myLog.log("error", error);
-         bot.telegram.sendMessage(
-         chatId, `Theme for <b>${search}</b> unavailable 🤨`, {
-        parse_mode: "HTML"
-})}
-})};
-bot.command('manga', ctx => {
-    myLog.log(ctx.from)
-    const chatId = ctx.chat.id;
-    const search = ctx.message.text.split(' ')[1];
-        if(search === undefined) {
-            bot.telegram.sendMessage(
-                chatId, `What would you want to see😏\n/manga 'theme'`
+                }
             );
-            return;
         } else {
-        aniP(search, chatId);
-    }
-    })
+            bot.telegram.sendMessage(
+                chatId, `No theme for <b>${search}</b> 🤨`, {
+                    parse_mode: "HTML"
+                }
+            );
+        }
+    }).catch(error => {
+        myLog.log("error", error);
+        bot.telegram.sendMessage(
+            chatId, `Theme for <b>${search}</b> unavailable 🤨`, {
+                parse_mode: "HTML"
+            }
+        );
+    });
+};
 
 bot.launch();
