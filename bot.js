@@ -3,7 +3,8 @@ const expressApp = express();
 const path = require('path');
 const axios = require('axios');
 const port = process.env.PORT || 8080;
-const { default: OpenAI } = require('openai');
+//const { default: OpenAI } = require('openai');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 const fs = require("fs");
 const userStates = new Map(); // Track user conversation states
 
@@ -22,9 +23,8 @@ const splitMessage = (text, maxLength = 4000) => {
             currentChunk += line + '\n';
         }
     }
-    
-    if (currentChunk) chunks.push(currentChunk.trim());
-    return chunks;
+        if (currentChunk) chunks.push(currentChunk.trim());
+        return chunks;
 };
 
 
@@ -173,9 +173,6 @@ bot.telegram.sendMessage(
 // });
 
 // AI but GEMINI
-const { GoogleGenerativeAI } = require("@google/generative-ai");
-
-
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
 
@@ -248,7 +245,25 @@ bot.command('gemini', ctx => {
      }); */
 
 
+//TOKEN CHECKER
+const searchToken = async (query) => {
+    const url = `https://api.geckoterminal.com/api/v2/search/pools?query=${query}`;
+    const response = await axios.get(url);
+    return response.data;
+};
 
+
+    bot.command('tokencheck', ctx => {
+        myLog.log(ctx.from)
+        const chatId = ctx.chat.id;
+    
+        userStates.set(chatId, {waitingFor: 'token_addy'});
+        
+        bot.telegram.sendMessage(
+            chatId, 
+            `Send the addy!`
+        );
+    });
 
 
 //UPDATED anime feature: bring up manga panels OR a RANDOM anime Image.
@@ -399,13 +414,19 @@ bot.on('text', ctx => {
         userStates.delete(chatId);
         aniP(search, chatId);
     }
+    // Handle token
+    else if (userState && userState.waitingFor === 'token_addy') {
+        const search = ctx.message.text.trim();
+        userStates.delete(chatId);
+        aniP(search, chatId);
+    }
 });
 
 
 bot.launch();
 
-//add health advice
 //add code that checks details of a token maybe DEXScreener's API
 //add code that gives an Update on Matches for EPL, Laliga,  Serie A and Bundensliga
 //add code that
 //add meme feature
+//link to vercel
