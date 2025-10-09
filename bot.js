@@ -8,6 +8,25 @@ const fs = require("fs");
 const userStates = new Map(); // Track user conversation states
 
 const token = require('dotenv').config();
+const splitMessage = (text, maxLength = 4000) => {
+    const chunks = [];
+    let currentChunk = '';
+    
+    const lines = text.split('\n');
+    
+    for (const line of lines) {
+        if ((currentChunk + line + '\n').length > maxLength) {
+            if (currentChunk) chunks.push(currentChunk.trim());
+            currentChunk = line + '\n';
+        } else {
+            currentChunk += line + '\n';
+        }
+    }
+    
+    if (currentChunk) chunks.push(currentChunk.trim());
+    return chunks;
+};
+
 
 const { Console } = require("console");
 const { error } = require('console');
@@ -158,19 +177,19 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({model: "gemini-pro"});
+const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
 
-    bot.command('gemini', ctx => {
-        myLog.log(ctx.from);
-        const chatId = ctx.chat.id;
+bot.command('gemini', ctx => {
+    myLog.log(ctx.from);
+    const chatId = ctx.chat.id;
 
-        userStates.set(chatId, {waitingFor: 'gemini_question'});
-        
-        bot.telegram.sendMessage(
-            chatId, 
-            `What would you like me to explain? 🤖`
-        );
-    });
+    userStates.set(chatId, {waitingFor: 'gemini_question'});
+    
+    bot.telegram.sendMessage(
+        chatId, 
+        `What would you like me to explain? 🤖`
+    );
+});
 
 
 // OLD ANIME CODE
@@ -297,14 +316,12 @@ bot.on('text', ctx => {
     const chatId = ctx.chat.id;
     const userState = userStates.get(chatId);
     
-    // Handle Gemini
-    if (userState && userState.waitingFor === 'gemini_question') {
+   if (userState && userState.waitingFor === 'gemini_question') {
     const question = ctx.message.text.trim();
     
     userStates.delete(chatId);
     
     bot.telegram.sendMessage(chatId, '🤔 Calm...');
-    
     
     const prompt = `You are a helpful assistant using 'Domain Expansion: Infinite Wisdom' to explain things clearly.\n\nUser question: ${question}`;
     
@@ -312,7 +329,16 @@ bot.on('text', ctx => {
         .then(result => {
             const response = result.response;
             const aiResponse = response.text();
-            bot.telegram.sendMessage(chatId, aiResponse);
+            
+            // Split message if it's too long
+            const chunks = splitMessage(aiResponse);
+            
+            // Send each chunk
+            chunks.forEach((chunk, index) => {
+                setTimeout(() => {
+                    bot.telegram.sendMessage(chatId, chunk);
+                }, index * 500); // 500ms delay between messages
+            });
         })
         .catch(error => {
             myLog.log("Gemini error:", error.message);
@@ -321,7 +347,7 @@ bot.on('text', ctx => {
                 `Sorry, I couldn't process that right now. Please try again! 😢`
             );
         });
-    };
+}
 
     // Handle ChatGPT question
     if (userState && userState.waitingFor === 'chatgpt_question') {
