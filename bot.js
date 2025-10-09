@@ -39,10 +39,10 @@ bot.command('start', ctx =>{
 //features
 bot.command('features', ctx =>{
     myLog.log(ctx.from)
-    bot.telegram.sendMessage(ctx.chat.id, `/eth For ETH price\n/btc For BTC price\n/sol For SOL price\n/weather For weather\n/manga "Your Theme" To Pull out an anime manga\n/ai For an AI Chat`)
+    bot.telegram.sendMessage(ctx.chat.id, `/eth For ETH price\n/btc For BTC price\n/sol For SOL price\n/weather For weather\n/manga To pull up an anime manga\n/ai For an AI Chat`)
 });
 
-//check ethereum price
+//check ETH price
 bot.command('eth', ctx =>{
     var rate;
     myLog.log(ctx.from);
@@ -55,7 +55,7 @@ bot.command('eth', ctx =>{
         })
     })
 });
-//check bitcoin price
+//check BTC price
 bot.command('btc', ctx =>{
     var rate;
     myLog.log(ctx.from);
@@ -68,7 +68,7 @@ bot.command('btc', ctx =>{
         })
     })
 })
-//check sol price
+//check SOL price
 bot.command('sol', ctx =>{
     var rate;
     myLog.log(ctx.from);
@@ -134,16 +134,6 @@ bot.command('weather', ctx =>{
     getCityWeather(chatId, city);
 }});
 
-
-//add mention feature
-// bot.textMention((ctx)=> {
-//     myLog.log(ctx.from), 
-//    bot.telegram.sendMessage(ctx.chat.id, `${userInfo.username} spotted. FBI open up!!!!\n\nKidding😶, send /features.`) 
-// })
-
-//add health advice
-
-//add meme feature
 
 //add openai(chat) feature
 const openai = new OpenAI({apiKey: process.env.OPEN_AI})
@@ -293,3 +283,9 @@ const aniP = (search, chatId) => {
 };
 
 bot.launch();
+
+//add health advice
+//add code that checks details of a token maybe DEXScreener's API
+//add code that gives an Update on Matches for EPL, Laliga,  Serie A and Bundensliga
+//add code that
+//add meme feature
