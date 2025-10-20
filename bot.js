@@ -155,23 +155,6 @@ bot.telegram.sendMessage(
 }
 
 
-
-// AI CHAT
-// const openai = new OpenAI({apiKey: process.env.OPEN_AI});
-// myLog.log("OpenAI API Key exists:", !!process.env.OPEN_AI);
-
-// bot.command('chatgpt', ctx => {
-//     myLog.log(ctx.from);
-//     const chatId = ctx.chat.id;
-
-//     userStates.set(chatId, {waitingFor: 'chatgpt_question'});
-    
-//     bot.telegram.sendMessage(
-//         chatId, 
-//         `What would you like me to explain? 🤖`
-//     );
-// });
-
 // AI but GEMINI
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
@@ -189,7 +172,7 @@ bot.command('gemini', ctx => {
 });
 
 
-// OLD ANIME CODE
+// OLD ANIME GENERATOR CODE
 /* //anime feature: bring up manga panels OR a RANDOM anime Image.
         const vog = (search) => (`https://api.panelsdesu.com/v1/search?q=${search}`);
         const des = (panels) => {
@@ -245,25 +228,138 @@ bot.command('gemini', ctx => {
      }); */
 
 
-//TOKEN CHECKER
-const searchToken = async (query) => {
-    const url = `https://api.geckoterminal.com/api/v2/search/pools?query=${query}`;
-    const response = await axios.get(url);
-    return response.data;
-};
+//TOKEN CHECKER - may just be in a new project
+// const Moralis = require('moralis').default;
+// const { EvmChain } = require('@moralisweb3/common-evm-utils');
 
 
-    bot.command('tokencheck', ctx => {
-        myLog.log(ctx.from)
-        const chatId = ctx.chat.id;
-    
-        userStates.set(chatId, {waitingFor: 'token_addy'});
+//     let moralisStarted = false;
+//     const startMoralis = async () => {
+//         if (!moralisStarted) {
+//             await Moralis.start({ apiKey: process.env.MORALIS_API_KEY });
+//             moralisStarted = true;
+//         }
+//     };
+
+//     const detectChain = (address) => {
+//   const prefix = address.slice(0, 2);
+//   if (prefix !== "0x") return EvmChain.ETHEREUM; //fallback
+
+//   // You can add more sophisticated detection here later
+//   // For now, check by known patterns / user preferences:
+//   const possibleChains = [
+//     EvmChain.ETHEREUM,
+//     EvmChain.BSC,
+//     EvmChain.POLYGON,
+//     EvmChain.ARBITRUM,
+//     EvmChain.BASE,
+//     EvmChain.AVALANCHE,
+//     EvmChain.OPTIMISM
+//   ];
+//   // Default fallback
+//   return EvmChain.ETHEREUM;
+// };
+
+//         bot.command('tokencheck', ctx => {
+//             myLog.log(ctx.from)
+//             const chatId = ctx.chat.id;
         
-        bot.telegram.sendMessage(
-            chatId, 
-            `Send the addy!`
-        );
-    });
+//             userStates.set(chatId, {waitingFor: 'token_addy'});
+            
+//             bot.telegram.sendMessage(
+//                 chatId, 
+//                 `Send the addy!`
+//             );
+//         });
+
+
+// const checkToken = async (chatId, address, username) => {
+//     try {
+//         // Search for the token across all networks
+//         const searchUrl = `https://api.geckoterminal.com/api/v2/search/pools?query=${address}`;
+//         const searchResponse = await axios.get(searchUrl);
+        
+//         if (!searchResponse.data.data || searchResponse.data.data.length === 0) {
+//             bot.telegram.sendMessage(chatId, `❌ Token not found or no liquidity pools exist yet.`);
+//             return;
+//         }
+        
+//         // Get the first pool (usually the main one)
+//         const pool = searchResponse.data.data[0];
+//         const poolAddress = pool.id;
+//         const network = pool.relationships.network.data.id;
+        
+//         // Get detailed pool info
+//         const poolUrl = `https://api.geckoterminal.com/api/v2/networks/${network}/pools/${poolAddress}`;
+//         const poolResponse = await axios.get(poolUrl);
+//         const poolData = poolResponse.data.data;
+//         const attributes = poolData.attributes;
+        
+//         // Extract token info
+//         const tokenName = attributes.name;
+//         const baseToken = attributes.base_token_price_usd;
+//         const marketCap = attributes.market_cap_usd;
+//         const fdv = attributes.fdv_usd;
+//         const volume24h = attributes.volume_usd.h24;
+//         const liquidity = attributes.reserve_in_usd;
+//         const priceChangeH24 = attributes.price_change_percentage.h24;
+//         const txnsH24Buys = attributes.transactions.h24.buys;
+//         const txnsH24Sells = attributes.transactions.h24.sells;
+//         const poolCreated = attributes.pool_created_at;
+        
+//         // Calculate age
+//         const createdDate = new Date(poolCreated);
+//         const now = new Date();
+//         const ageMs = now - createdDate;
+//         const ageDays = Math.floor(ageMs / (1000 * 60 * 60 * 24));
+//         const ageHours = Math.floor((ageMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        
+//         // Format numbers
+//         const formatNum = (num) => {
+//             if (!num) return 'N/A';
+//             if (num >= 1000000) return `$${(num / 1000000).toFixed(2)}M`;
+//             if (num >= 1000) return `$${(num / 1000).toFixed(2)}K`;
+//             return `$${parseFloat(num).toFixed(2)}`;
+//         };
+        
+//         // DexScreener link
+//         const dexLink = `https://dexscreener.com/${network}/${poolAddress}`;
+        
+//         // Build message
+//         const message = `
+// 🔍 <b>Token Check by @${username}</b>
+
+// 📛 <b>Name:</b> ${tokenName}
+// 📍 <b>CA:</b> <code>${address}</code>
+
+// 💰 <b>Price:</b> $${parseFloat(baseToken).toFixed(8)}
+// 📊 <b>Market Cap:</b> ${formatNum(marketCap)}
+// 💎 <b>FDV:</b> ${formatNum(fdv)}
+// 📈 <b>24h Volume:</b> ${formatNum(volume24h)}
+// 💧 <b>Liquidity:</b> ${formatNum(liquidity)}
+
+// 📉 <b>24h Change:</b> ${priceChangeH24 ? priceChangeH24.toFixed(2) : 'N/A'}%
+// ⏰ <b>Age:</b> ${ageDays}d ${ageHours}h
+
+// 🛒 <b>Buys (24h):</b> ${txnsH24Buys}
+// 🛍️ <b>Sells (24h):</b> ${txnsH24Sells}
+
+// 🔗 <a href="${dexLink}">View on DexScreener</a>
+//         `.trim();
+        
+//         bot.telegram.sendMessage(chatId, message, {
+//             parse_mode: 'HTML',
+//             disable_web_page_preview: true
+//         });
+        
+//     } catch (error) {
+//         myLog.log("Token check error:", error.response?.data || error.message);
+//         bot.telegram.sendMessage(
+//             chatId, 
+//             `❌ Error checking token. Make sure the address is correct!`
+//         );
+//     }
+// };
 
 
 //UPDATED anime feature: bring up manga panels OR a RANDOM anime Image.
@@ -327,7 +423,7 @@ const aniP = (search, chatId) => {
 
 
 //BOT ON
-bot.on('text', ctx => {
+bot.on('text', async ctx => {
     const chatId = ctx.chat.id;
     const userState = userStates.get(chatId);
 
@@ -363,45 +459,7 @@ bot.on('text', ctx => {
         });
 }
 
-    // Handle ChatGPT question
-    // if (userState && userState.waitingFor === 'chatgpt_question') {
-    //     const question = ctx.message.text.trim();
-        
-    //     userStates.delete(chatId);
-        
-    //     bot.telegram.sendMessage(chatId, '🤔 Calm...');
-        
-    //     openai.chat.completions.create({
-    //         model: 'gpt-3.5-turbo',
-    //         messages: [
-    //             {
-    //                 role: 'system',
-    //                 content: question
-    //             },
-    //             {
-    //                 role: 'user',
-    //                 content: question
-    //             }
-    //         ],
-    //         temperature: 0.7,
-    //     })
-    //     .then(response => {
-    //         const aiResponse = response.choices[0].message.content;
-    //         bot.telegram.sendMessage(chatId, aiResponse);
-    //     })
-    //     .catch(error => {
-    //         myLog.log("OpenAI error:", error);
-    //         myLog.log("Full OpenAI error:", JSON.stringify(error, null, 2));
-    //         myLog.log("Error message:", error.message);
-    //         myLog.log("Error status:", error.status);
-    //         myLog.log("Error code:", error.code);
-            
-    //         bot.telegram.sendMessage(
-    //             chatId, 
-    //             `Sorry, I couldn't process that. BooHoo 😢`
-    //         );
-    //     });
-    // }
+    
     // Handle weather city
     else if (userState && userState.waitingFor === 'weather_city') {
         const city = ctx.message.text.trim();
@@ -415,13 +473,18 @@ bot.on('text', ctx => {
         aniP(search, chatId);
     }
     // Handle token
-    else if (userState && userState.waitingFor === 'token_addy') {
-        const search = ctx.message.text.trim();
-        userStates.delete(chatId);
-        aniP(search, chatId);
-    }
-});
+//     else if (userState && userState.waitingFor === 'token_addy') {
+//     const address = ctx.message.text.trim();
+//     const username = ctx.from.username || "Anonymous";
+    
+//     userStates.delete(chatId);
+    
+//     bot.telegram.sendMessage(chatId, '🔍 Checking token...');
+    
+//     await checkToken(chatId, address, username);
+// }
 
+}) 
 
 bot.launch();
 
