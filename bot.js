@@ -7,7 +7,7 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const fs = require("fs");
 const userStates = new Map(); // Track user conversation states
 
-const token = require('dotenv').config();
+// const token = require('dotenv').config();
 const splitMessage = (text, maxLength = 4000) => {
     const chunks = [];
     let currentChunk = '';
@@ -36,7 +36,7 @@ const myLog = new Console({
 
 
 const { Telegraf } = require('telegraf');
-const bot = new Telegraf(process.env.BOT_TOKEN)
+const bot = new Telegraf(process.env.TOKEN)
 
 
 expressApp.use(express.static('static'));
