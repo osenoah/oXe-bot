@@ -8,7 +8,7 @@ A Telegram bot that summons random manga panels and communes like an AI sensei.
 ## Features
 
 - **Random Manga Panels**: Summon random manga panels based on your favorite themes
-- **AI Chat (Gemini)**: Chat with an AI sensei powered by Google's Gemini 2.5 Flash
+- **AI Chat**: Chat with an AI sensei powered by Google's Gemini 2.5 Flash
 - **Interactive Commands**: Easy-to-use command system for seamless interaction
 
 ## Quick Start
@@ -20,17 +20,12 @@ Start chatting with the bot: **[t.me/oXeweeb_bot](https://t.me/oXeweeb_bot)**
 - **[Node.js](https://nodejs.org/)** - Runtime environment
 - **[Telegraf](https://telegraf.js.org/)** - Modern Telegram Bot framework
 - **[Google Generative AI (Gemini)](https://ai.google.dev/)** - AI-powered chat using Gemini 2.5 Flash
-- **[Axios](https://axios-http.com/)** - HTTP client for API requests
 - **[Panels Desu API](https://panelsdesu.com/)** - Manga panel image source
-
-## Deployment
-
-This bot is deployed on **[Railway](https://railway.app)**.
 
 ## Local Development
 
 ```bash
-# Clone the repository
+# Clone repository
 git clone https://github.com/osenoah/oXe-bot.git
 
 # Install dependencies
