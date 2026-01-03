@@ -6,3 +6,5 @@ package-lock.json
 launch.json
 /node_modules
 ver.json
+ide.txt
+.vercel
